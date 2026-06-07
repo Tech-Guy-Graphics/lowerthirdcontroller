@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Main_Logo" data-name="Main Logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #0e2fcb;
+      }
+
+      .cls-2 {
+        letter-spacing: -.03em;
+      }
+
+      .cls-3 {
+        fill: #0095ff;
+        font-family: Arial-Black, Arial;
+        font-size: 163.11px;
+        font-weight: 800;
+      }
+
+      .cls-4 {
+        fill: none;
+        stroke: #0095ff;
+        stroke-miterlimit: 10;
+        stroke-width: 20.24px;
+      }
+    </style>
+  </defs>
+  <rect class="cls-1" x="39.02" y="160.11" width="429.98" height="168.89"/>
+  <g>
+    <rect class="cls-4" x="39.02" y="156.1" width="433.96" height="182.79" rx="15.47" ry="15.47"/>
+    <text class="cls-3" transform="translate(66.88 305.89)"><tspan class="cls-2" x="0" y="0">T</tspan><tspan x="112.21" y="0">GG</tspan></text>
+  </g>
+</svg>
