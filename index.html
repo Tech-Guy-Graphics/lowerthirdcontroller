@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Google Sheets Lower Third Controller</title>
-  <!-- Tailwind CSS -->
+  
+  <link rel="icon" type="image/svg+xml" href="TGG Logo SVG.svg">
+  
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Vue 3 CDN -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
     
     /* Ensure the browser window itself is fully transparent for software like OBS */
     html, body {
@@ -29,7 +29,7 @@
       background-size: 16px 16px;
     }
 
-    /* Lower Third Entrance/Exit Animations */
+    /* Lower Third Entrance/Exit Base Animations */
     .lower-third-enter-from {
       opacity: 0;
       transform: translateY(40px) scale(0.92);
@@ -48,6 +48,23 @@
     }
     .lower-third-transition {
       transition: all 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Text Fade & Slide In from the Right Animation */
+    @keyframes textFadeSlideIn {
+      0% {
+        opacity: 0;
+        transform: translateX(35px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    /* Trigger the animation when the lower third wrapper becomes rendered */
+    .animate-text-reveal {
+      animation: textFadeSlideIn 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     /* Custom TGG Brand Utilities */
@@ -104,12 +121,10 @@
 
   <div id="app" class="min-h-screen flex flex-col transition-colors duration-300 relative overflow-hidden" :class="appBgClass">
     
-    <!-- 1. STARTUP INTRO ANIMATION SCREEN (2-Second Clean Splash) -->
     <transition name="fade">
       <div v-if="showIntro && !isOverlayMode" class="fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center transition-all duration-700 ease-in-out">
         <div class="flex flex-col items-center gap-6 max-w-md px-6 text-center animate-pulse">
           
-          <!-- Logo & Slogan tightly grouped to make 'Powering Dreams' closer to the logo -->
           <div class="flex flex-col items-center gap-2">
             <div class="flex items-center justify-center">
               <img 
@@ -129,7 +144,6 @@
               TGG LOWER THIRD CONTROLLER
             </h2>
           </div>
-          <!-- Tiny loading bar effect -->
           <div class="w-32 h-1 bg-slate-900 rounded-full overflow-hidden mt-4">
             <div class="h-full bg-gradient-to-r from-[#0e2fcb] to-[#0095ff] w-full rounded-full transition-transform duration-[2000ms] origin-left scale-x-100"></div>
           </div>
@@ -137,7 +151,6 @@
       </div>
     </transition>
 
-    <!-- MAIN APP STRUCTURE (With Master Reveal Active trigger class) -->
     <div class="min-h-screen flex flex-col transition-all duration-1000 transform" 
          :class="{
            'opacity-0 translate-y-6': !revealSite && !isOverlayMode, 
@@ -145,10 +158,8 @@
            'reveal-active': revealSite
          }">
 
-      <!-- HEADER (Hidden in pure overlay mode) -->
       <header v-if="!isOverlayMode" class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex flex-wrap justify-between items-center gap-4 shadow-lg animate-fade-in-up delay-100">
         <div class="flex items-center gap-4">
-          <!-- Floating Header Logo (No box, border, or background) -->
           <div class="flex items-center justify-center shrink-0">
             <img 
               src="TGG Logo SVG.svg" 
@@ -159,7 +170,7 @@
           </div>
           <div>
             <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              Lower Third Controller <span class="text-xs bg-[#0095ff]/10 text-[#0095ff] border border-[#0095ff]/20 px-2 py-0.5 rounded-full font-medium">v1.3</span>
+              Lower Third Controller <span class="text-xs bg-[#0095ff]/10 text-[#0095ff] border border-[#0095ff]/20 px-2 py-0.5 rounded-full font-medium">v1.4</span>
             </h1>
             <p class="text-xs text-slate-400">Powered by Tech Guy Graphics</p>
           </div>
@@ -173,15 +184,12 @@
         </div>
       </header>
 
-      <!-- MAIN INTERFACE -->
       <main class="flex-grow flex flex-col lg:flex-row relative" v-if="!isOverlayMode">
         
-        <!-- CONFIGURATION PANEL (LEFT - Draggable & Resizable Width) -->
         <section 
           class="w-full bg-slate-950 p-6 border-r border-slate-800/80 flex flex-col gap-6 overflow-y-auto shrink-0 relative custom-scroll"
           :style="{ width: isLargeScreen ? sidebarWidth + 'px' : '100%' }">
           
-          <!-- Connection Setup (Animated Entrance) -->
           <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-sm animate-fade-in-up delay-200">
             <h2 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
               <i data-lucide="link" class="w-4 h-4 text-[#0095ff]"></i>
@@ -203,7 +211,6 @@
               </button>
             </div>
 
-            <!-- CSV Input Option -->
             <div v-if="connectionType === 'csv'" class="space-y-3">
               <div>
                 <label class="block text-xs font-semibold text-slate-400 mb-1">Google Sheet CSV URL</label>
@@ -214,12 +221,8 @@
                   class="w-full bg-slate-955 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#0095ff] placeholder-slate-600"
                 />
               </div>
-              <p class="text-[11px] text-slate-500 leading-relaxed">
-                <strong>Quick Guide:</strong> In Google Sheets, go to <span class="text-slate-400">File &gt; Share &gt; Publish to web</span>. Select <span class="text-slate-400">Entire Document</span> and <span class="text-slate-400">Comma-separated values (.csv)</span>, then copy & paste that link here.
-              </p>
             </div>
 
-            <!-- API Input Option -->
             <div v-else class="space-y-3">
               <div>
                 <label class="block text-xs font-semibold text-slate-400 mb-1">Spreadsheet ID</label>
@@ -256,41 +259,19 @@
             </div>
           </div>
 
-          <!-- Sheet Layout Guide (Animated Entrance) -->
-          <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 animate-fade-in-up delay-300">
-            <h2 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-              <i data-lucide="table-properties" class="w-4 h-4 text-emerald-400"></i>
-              Expected Sheet Layout
+          <div class="bg-slate-900 p-5 rounded-xl border border-slate-800/80 animate-fade-in-up delay-300">
+            <h2 class="text-sm font-bold text-[#0095ff] uppercase tracking-wider mb-2 flex items-center gap-2">
+              <i data-lucide="monitor-play" class="w-4 h-4"></i>
+              OBS Direct Broadcast Link
             </h2>
-            <ul class="text-xs space-y-2 text-slate-400">
-              <li class="flex items-start gap-2">
-                <span class="font-bold text-emerald-400">Col A (A2+):</span> Names (e.g. John Doe)
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="font-bold text-emerald-400">Col B (B2+):</span> Descriptors (e.g. Executive Producer)
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="font-bold text-emerald-400">Col C (C2+):</span> Checkboxes (checked displays that row)
-              </li>
-              <li class="flex items-start gap-2 border-t border-slate-800/80 pt-2 mt-2">
-                <span class="font-bold text-[#0095ff]">Cell F2:</span> Image URL
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="font-bold text-[#0095ff]">Cell F3:</span> Image size number (e.g. 110)
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="font-bold text-[#0095ff]">Cell F4:</span> Bar color (e.g. #4F46E5)
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="font-bold text-[#0095ff]">Cell F5:</span> Text color (e.g. #FFFFFF)
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="font-bold text-[#0095ff]">Cell F6:</span> Overall Scale Size (e.g. 1.0 or 100%)
-              </li>
-            </ul>
+            <p class="text-xs text-slate-400 leading-relaxed mb-3">
+              To load into OBS without opening the settings dashboard, append <span class="text-emerald-400 font-mono font-semibold bg-slate-950 px-1 py-0.5 rounded">?view=overlay</span> to your GitHub Pages address.
+            </p>
+            <div class="bg-slate-950 p-2 rounded border border-slate-800 text-[11px] font-mono select-all text-slate-300 break-all">
+              https://tech-guy-graphics.github.io/lowerthirdcontroller/?view=overlay
+            </div>
           </div>
 
-          <!-- Polling & Customizations (Animated Entrance) -->
           <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 animate-fade-in-up delay-400">
             <h2 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
               <i data-lucide="sliders" class="w-4 h-4 text-[#0095ff]"></i>
@@ -317,11 +298,10 @@
           </div>
 
           <div class="text-center mt-auto pt-4 animate-fade-in-up delay-500">
-            <p class="text-[10px] text-slate-600">TGG Lower Third Overlay • v1.3</p>
+            <p class="text-[10px] text-slate-600">TGG Lower Third Overlay • v1.4</p>
           </div>
         </section>
 
-        <!-- VERTICAL RESIZE SPLITTER DRAG BAR (Visible on Desktop / LG sizes) -->
         <div 
           v-if="isLargeScreen"
           @mousedown="initResize"
@@ -329,10 +309,8 @@
           title="Drag to resize panel">
         </div>
 
-        <!-- PREVIEW & LIVE DATA AREA (RIGHT) -->
         <section class="flex-grow flex flex-col bg-slate-950 min-w-0 overflow-y-auto custom-scroll">
           
-          <!-- Live Lower Third Canvas Preview (Animated Entrance) -->
           <div class="p-6 border-b border-slate-800/80 bg-slate-900/20 relative animate-fade-in-up delay-200">
             <div class="flex justify-between items-center mb-3">
               <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -342,7 +320,6 @@
               <span class="text-[11px] text-slate-500 bg-slate-900 border border-slate-800 px-2 py-0.5 rounded-md">1920 x 1080 Aspect Area</span>
             </div>
 
-            <!-- The virtual viewport mirroring the lower third output -->
             <div 
               class="relative w-full aspect-video rounded-xl border border-slate-800 overflow-hidden shadow-2xl transition-colors duration-300"
               :class="{
@@ -351,68 +328,44 @@
                 'bg-transparent pattern-checkered': previewBg === 'transparent'
               }">
               
-              <!-- Safe Area Guides -->
               <div class="absolute inset-6 border border-dashed border-white/5 pointer-events-none rounded-lg flex items-end p-2">
-                <span class="text-[9px] text-white/20 select-none">Action Safe (Title Safe Area)</span>
+                <span class="text-[9px] text-white/20 select-none">Action Safe Area</span>
               </div>
 
-              <!-- LOWER THIRD RENDERING LAYER -->
               <div class="absolute bottom-12 left-12 right-12 flex items-end">
-                
                 <transition name="lower-third" class="lower-third-transition">
                   <div v-if="activeItem" class="flex items-center gap-4 origin-bottom-left" :style="{ transform: `scale(${scaleFactor})` }">
                     
-                    <!-- Left side Logo/Image -->
                     <div 
                       class="flex-shrink-0 relative z-20 overflow-hidden transition-all duration-500"
-                      :style="{ 
-                        width: `${imageSize}px`, 
-                        height: `${imageSize}px`
-                      }">
-                      <img 
-                        :src="imageLink" 
-                        @error="handleImageError"
-                        class="w-full h-full object-contain" 
-                        alt="Logo"
-                      />
+                      :style="{ width: `${imageSize}px`, height: `${imageSize}px` }">
+                      <img :src="imageLink" @error="handleImageError" class="w-full h-full object-contain" alt="Logo" />
                     </div>
 
-                    <!-- Right side fading bar containing text -->
                     <div class="relative flex items-center pr-20 min-h-[70px]">
-                      
-                      <!-- Fading Color Bar -->
                       <div 
                         class="absolute inset-y-0 left-0 rounded-l-2xl z-10 transition-all duration-500"
-                        :style="{
-                          width: '100%',
-                          background: `linear-gradient(to right, ${barColor} 0%, ${barColor} 40%, transparent 85%)`
-                        }">
+                        :style="{ width: '100%', background: `linear-gradient(to right, ${barColor} 0%, ${barColor} 40%, transparent 85%)` }">
                       </div>
 
-                      <!-- Text content placed on top of bar -->
-                      <div class="relative z-20 pl-6 py-2 flex flex-col justify-center select-none" :style="{ color: textColor }">
+                      <div class="relative z-20 pl-6 py-2 flex flex-col justify-center select-none animate-text-reveal" :style="{ color: textColor }">
                         <h3 class="text-2xl font-extrabold tracking-tight leading-none whitespace-nowrap">{{ activeItem.name }}</h3>
                         <p class="text-xs font-semibold tracking-wide opacity-90 mt-1 whitespace-nowrap">{{ activeItem.descriptor }}</p>
                       </div>
-
                     </div>
 
                   </div>
                 </transition>
-
               </div>
 
-              <!-- Absolute Placeholder Info if Empty -->
               <div v-if="!activeItem" class="absolute inset-0 flex flex-col items-center justify-center text-slate-500 p-4 text-center pointer-events-none">
                 <i data-lucide="info" class="w-8 h-8 mb-2 opacity-40"></i>
                 <p class="text-sm font-semibold text-slate-400">No active lower third to show</p>
-                <p class="text-xs text-slate-500 mt-1">Check a box in column C of your Google Sheet or the simulation list below.</p>
               </div>
 
             </div>
           </div>
 
-          <!-- SHEET ROW MANAGER & TABLE DATA (Animated Entrance) -->
           <div class="flex-grow p-6 flex flex-col min-h-0 animate-fade-in-up delay-300">
             <div class="flex justify-between items-center mb-4">
               <div>
@@ -420,180 +373,96 @@
                   <i data-lucide="database" class="w-4 h-4 text-[#0095ff]"></i>
                   Synced Sheet Rows
                 </h3>
-                <p class="text-xs text-slate-500">Showing rows A2 to C99. Checkboxes determine display priority.</p>
               </div>
-
-              <div class="flex items-center gap-2">
-                <button 
-                  @click="useSimulationData"
-                  class="px-2.5 py-1 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-[11px] text-slate-400 hover:text-slate-200 rounded transition-all">
-                  Load Mock Template Data
-                </button>
-              </div>
+              <button @click="useSimulationData" class="px-2.5 py-1 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-[11px] text-slate-400 rounded transition-all">
+                Load Mock Template Data
+              </button>
             </div>
 
-            <!-- Alert banner if empty or error -->
             <div v-if="errorMessage" class="mb-4 bg-rose-500/10 border border-rose-500/30 text-rose-300 p-3 rounded-lg text-xs flex items-center gap-2">
               <i data-lucide="alert-triangle" class="w-4 h-4 flex-shrink-0"></i>
               <span>{{ errorMessage }}</span>
             </div>
 
-            <!-- Sheet Settings Summary Widget -->
-            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4 bg-slate-900/40 p-3 rounded-xl border border-slate-800/80 text-[11px]">
-              <div class="flex flex-col">
-                <span class="text-slate-500 text-[9px] uppercase font-bold tracking-wider">Logo/Image (F2)</span>
-                <a :href="imageLink" target="_blank" class="text-[#0095ff] hover:underline font-medium truncate mt-0.5">{{ imageLink }}</a>
-              </div>
-              <div class="flex flex-col">
-                <span class="text-slate-500 text-[9px] uppercase font-bold tracking-wider">Image Size (F3)</span>
-                <span class="text-slate-200 font-bold mt-0.5">{{ imageSize }}px</span>
-              </div>
-              <div class="flex flex-col">
-                <span class="text-slate-500 text-[9px] uppercase font-bold tracking-wider">Bar Color (F4)</span>
-                <div class="flex items-center gap-1.5 mt-0.5">
-                  <span class="w-3.5 h-3.5 rounded border border-white/20" :style="{ backgroundColor: barColor }"></span>
-                  <span class="text-slate-200 font-bold uppercase font-mono">{{ barColor }}</span>
-                </div>
-              </div>
-              <div class="flex flex-col">
-                <span class="text-slate-500 text-[9px] uppercase font-bold tracking-wider">Text Color (F5)</span>
-                <div class="flex items-center gap-1.5 mt-0.5">
-                  <span class="w-3.5 h-3.5 rounded border border-white/20" :style="{ backgroundColor: textColor }"></span>
-                  <span class="text-slate-200 font-bold uppercase font-mono">{{ textColor }}</span>
-                </div>
-              </div>
-              <div class="flex flex-col">
-                <span class="text-slate-500 text-[9px] uppercase font-bold tracking-wider">Scale Size (F6)</span>
-                <span class="text-[#0095ff] font-bold mt-0.5">{{ (scaleFactor * 100).toFixed(0) }}%</span>
-              </div>
-            </div>
-
-            <!-- Interactive Rows Table -->
             <div class="flex-grow overflow-y-auto border border-slate-800 rounded-xl bg-slate-900/20 max-h-[280px]">
               <table class="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr class="bg-slate-900 border-b border-slate-800 text-slate-400 sticky top-0 font-semibold select-none">
+                  <tr class="bg-slate-900 border-b border-slate-800 text-slate-400 sticky top-0 font-semibold">
                     <th class="py-2.5 px-4 text-center w-12">Display</th>
                     <th class="py-2.5 px-4 w-12">Row</th>
                     <th class="py-2.5 px-4">Name (Col A)</th>
                     <th class="py-2.5 px-4">Descriptor (Col B)</th>
-                    <th class="py-2.5 px-4 text-right">Quick Action</th>
+                    <th class="py-2.5 px-4 text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-800/60">
-                  <tr 
-                    v-for="(row, idx) in rows" 
-                    :key="idx" 
-                    class="hover:bg-slate-800/40 transition-colors"
-                    :class="{'bg-[#0e2fcb]/10': row.checked}">
+                  <tr v-for="(row, idx) in rows" :key="idx" class="hover:bg-slate-800/40 transition-colors" :class="{'bg-[#0e2fcb]/10': row.checked}">
                     <td class="py-2 px-4 text-center">
-                      <input 
-                        type="checkbox" 
-                        v-model="row.checked" 
-                        @change="handleRowToggle(idx)"
-                        class="w-4.5 h-4.5 text-[#0e2fcb] bg-slate-950 border-slate-800 rounded focus:ring-[#0095ff] focus:ring-offset-slate-900 cursor-pointer"
-                      />
+                      <input type="checkbox" v-model="row.checked" @change="handleRowToggle(idx)" class="w-4.5 h-4.5 text-[#0e2fcb] bg-slate-950 border-slate-800 rounded cursor-pointer" />
                     </td>
                     <td class="py-2 px-4 text-slate-500 font-mono">#{{ idx + 2 }}</td>
                     <td class="py-2 px-4 font-semibold text-slate-200">{{ row.name || '—' }}</td>
                     <td class="py-2 px-4 text-slate-400 font-medium">{{ row.descriptor || '—' }}</td>
                     <td class="py-2 px-4 text-right">
-                      <button 
-                        @click="row.checked = !row.checked; handleRowToggle(idx)" 
-                        :class="row.checked ? 'text-rose-400 hover:text-rose-300' : 'text-[#0095ff] hover:text-[#0095ff]/80'"
-                        class="font-semibold transition-all">
+                      <button @click="row.checked = !row.checked; handleRowToggle(idx)" :class="row.checked ? 'text-rose-400' : 'text-[#0095ff]'" class="font-semibold">
                         {{ row.checked ? 'Disable' : 'Force Show' }}
                       </button>
                     </td>
                   </tr>
-                  <tr v-if="rows.length === 0">
-                    <td colspan="5" class="py-8 text-center text-slate-500 font-medium">
-                      No records found. Setup connection or load template data.
-                  </tr>
                 </tbody>
               </table>
             </div>
-
           </div>
         </section>
       </main>
 
-      <!-- PURE OVERLAY VIEWPORT (Activated when isOverlayMode is true) -->
       <section v-else class="flex-grow relative h-screen w-screen flex items-end justify-start p-16 select-none overflow-hidden">
         
-        <!-- Hoverable Control strip at very top to exit -->
         <div class="absolute top-0 inset-x-0 h-14 bg-gradient-to-b from-slate-950/80 to-transparent flex justify-between items-center px-6 opacity-0 hover:opacity-100 transition-opacity duration-300 z-50">
           <div class="flex items-center gap-4 text-xs font-semibold text-slate-300">
             <span class="flex items-center gap-1.5 text-emerald-400">
               <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              Live Broadcast Overlay
+              Live Broadcast Overlay Route Active
             </span>
-            <span class="text-slate-500">|</span>
-            <span class="text-slate-400">Source: {{ connectionType === 'csv' ? 'CSV Url' : 'API Feed' }}</span>
           </div>
           <div class="flex items-center gap-2">
-            <!-- Background toggles for live OBS alignment testing inside browser source -->
-            <span class="text-[10px] text-slate-400 uppercase tracking-widest mr-1">Chroma Mode:</span>
-            <button @click="bgType = 'transparent'" :class="bgType === 'transparent' ? 'bg-[#0e2fcb] text-white' : 'bg-slate-900 text-slate-400'" class="px-2.5 py-1 rounded text-xs transition">Transparent</button>
-            <button @click="bgType = 'green'" :class="bgType === 'green' ? 'bg-[#0095ff] text-white' : 'bg-slate-900 text-slate-400'" class="px-2.5 py-1 rounded text-xs transition">Green</button>
-            <button @click="bgType = 'dark'" :class="bgType === 'dark' ? 'bg-slate-800 text-white' : 'bg-slate-900 text-slate-400'" class="px-2.5 py-1 rounded text-xs transition">Dark Preview</button>
-            <button @click="toggleOverlayMode" class="ml-4 px-3 py-1 bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1">
-              <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            <button @click="bgType = 'transparent'" :class="bgType === 'transparent' ? 'bg-[#0e2fcb] text-white' : 'bg-slate-900 text-slate-400'" class="px-2.5 py-1 rounded text-xs">Transparent</button>
+            <button @click="bgType = 'green'" :class="bgType === 'green' ? 'bg-[#0095ff] text-white' : 'bg-slate-900 text-slate-400'" class="px-2.5 py-1 rounded text-xs">Green</button>
+            <button @click="isOverlayMode = false" class="ml-4 px-3 py-1 bg-rose-600 text-white text-xs font-bold rounded-lg transition-all">
               Exit Overlay Mode
             </button>
           </div>
         </div>
 
-        <!-- LOWER THIRD GRAPHIC -->
         <div class="flex items-end select-none">
-          
           <transition name="lower-third" class="lower-third-transition">
             <div v-if="activeItem" class="flex items-center gap-4 origin-bottom-left" :style="{ transform: `scale(${scaleFactor})` }">
               
-              <!-- Clean transparent logo container (No bounding box, no shadow) -->
               <div 
                 class="flex-shrink-0 relative z-20 overflow-hidden transition-all duration-500"
-                :style="{ 
-                  width: `${imageSize}px`, 
-                  height: `${imageSize}px`
-                }">
-                <img 
-                  :src="imageLink" 
-                  @error="handleImageError"
-                  class="w-full h-full object-contain" 
-                  alt="Logo"
-                />
+                :style="{ width: `${imageSize}px`, height: `${imageSize}px` }">
+                <img :src="imageLink" @error="handleImageError" class="w-full h-full object-contain" alt="Logo" />
               </div>
 
-              <!-- Fading Background bar -->
               <div class="relative flex items-center pr-24 min-h-[80px]">
-                
-                <!-- Inner dynamic custom colored bar (Rounded only on left edge; fades 40% -> 85%) -->
                 <div 
                   class="absolute inset-y-0 left-0 rounded-l-2xl z-10"
-                  :style="{
-                    width: '100%',
-                    background: `linear-gradient(to right, ${barColor} 0%, ${barColor} 40%, transparent 85%)`
-                  }">
+                  :style="{ width: '100%', background: `linear-gradient(to right, ${barColor} 0%, ${barColor} 40%, transparent 85%)` }">
                 </div>
 
-                <!-- Live Dynamic Title Texts -->
-                <div class="relative z-20 pl-7 py-2.5 flex flex-col justify-center" :style="{ color: textColor }">
+                <div class="relative z-20 pl-7 py-2.5 flex flex-col justify-center animate-text-reveal" :style="{ color: textColor }">
                   <h3 class="text-3xl font-extrabold tracking-tight leading-none whitespace-nowrap">{{ activeItem.name }}</h3>
                   <p class="text-sm font-semibold tracking-wide opacity-90 mt-1 whitespace-nowrap">{{ activeItem.descriptor }}</p>
                 </div>
-
               </div>
 
             </div>
           </transition>
-
         </div>
 
       </section>
 
     </div>
-
   </div>
 
   <script>
@@ -601,58 +470,44 @@
 
     createApp({
       setup() {
-        // Intro Screen animations setup
         const showIntro = ref(true);
         const revealSite = ref(false);
 
-        // Core states
-        const connectionType = ref('csv'); // 'csv' or 'api'
+        const connectionType = ref('csv');
         const csvUrl = ref('');
         const sheetId = ref('');
         const apiKey = ref('');
         const rows = ref([]);
         
-        // Draggable layout states
         const sidebarWidth = ref(420);
         const isLargeScreen = ref(window.innerWidth >= 1024);
 
-        // Dynamic lower-third custom values (from sheet)
-        const imageLink = ref('https://picsum.photos/200'); // F2 default fallback
-        const imageSize = ref(110); // F3 default size
-        const barColor = ref('#0095ff'); // F4 default color aligned to lightweight theme highlight
-        const textColor = ref('#ffffff'); // F5 default color
-        const scaleFactor = ref(1.0); // F6 default scale size multiplier
+        const imageLink = ref('https://picsum.photos/200');
+        const imageSize = ref(110);
+        const barColor = ref('#0095ff');
+        const textColor = ref('#ffffff');
+        const scaleFactor = ref(1.0);
 
-        // App Control States
         const isPolling = ref(true);
-        const pollingInterval = ref(3); // default 3 seconds
+        const pollingInterval = ref(3);
         const isLoading = ref(false);
         const errorMessage = ref('');
         const isOverlayMode = ref(false);
-        const previewBg = ref('dark'); // 'dark', 'green', 'transparent'
-        const bgType = ref('transparent'); // 'transparent', 'green', 'dark' for overlay capturing
+        const previewBg = ref('dark');
+        const bgType = ref('transparent');
         let timer = null;
 
-        // Dynamic Computed background styles depending on context (ensures body capture in OBS is completely clear)
         const appBgClass = computed(() => {
-          if (!isOverlayMode.value) {
-            return 'bg-slate-950 text-slate-100';
-          }
-          if (bgType.value === 'green') {
-            return 'bg-green-600 text-slate-100';
-          }
-          if (bgType.value === 'dark') {
-            return 'bg-slate-950 text-slate-100';
-          }
-          return 'bg-transparent text-slate-100'; // Default pure alpha transparency for streaming
+          if (!isOverlayMode.value) return 'bg-slate-950 text-slate-100';
+          if (bgType.value === 'green') return 'bg-green-600 text-slate-100';
+          if (bgType.value === 'dark') return 'bg-slate-950 text-slate-100';
+          return 'bg-transparent text-slate-100';
         });
 
-        // Get currently active Lower Third Item (first item that is checked)
         const activeItem = computed(() => {
           return rows.value.find(row => row.checked) || null;
         });
 
-        // Resize panel handler
         const initResize = (e) => {
           e.preventDefault();
           window.addEventListener('mousemove', handleResize);
@@ -662,9 +517,7 @@
         };
 
         const handleResize = (e) => {
-          if (e.clientX >= 280 && e.clientX <= 600) {
-            sidebarWidth.value = e.clientX;
-          }
+          if (e.clientX >= 280 && e.clientX <= 600) sidebarWidth.value = e.clientX;
         };
 
         const stopResize = () => {
@@ -675,7 +528,6 @@
           localStorage.setItem('sc_sidebarWidth', sidebarWidth.value);
         };
 
-        // Initialize local storage configurations
         const loadSavedSettings = () => {
           const savedCsvUrl = localStorage.getItem('sc_csvUrl');
           const savedSheetId = localStorage.getItem('sc_sheetId');
@@ -703,32 +555,23 @@
           localStorage.setItem('sc_scaleFactor', scaleFactor.value);
         };
 
-        // Standard CSV Parser to parse Google Sheet Publish to Web URL safely
         const parseCSV = (text) => {
-          let lines = [];
-          let row = [""];
-          let inQuotes = false;
+          let lines = []; let row = [""]; let inQuotes = false;
           for (let i = 0; i < text.length; i++) {
-            let c = text[i];
-            let next = text[i+1];
+            let c = text[i]; let next = text[i+1];
             if (c === '"') {
               if (inQuotes && next === '"') { row[row.length - 1] += '"'; i++; }
               else { inQuotes = !inQuotes; }
-            } else if (c === ',' && !inQuotes) {
-              row.push('');
-            } else if ((c === '\r' || c === '\n') && !inQuotes) {
+            } else if (c === ',' && !inQuotes) { row.push(''); }
+            else if ((c === '\r' || c === '\n') && !inQuotes) {
               if (c === '\r' && next === '\n') { i++; }
-              lines.push(row);
-              row = [''];
-            } else {
-              row[row.length - 1] += c;
-            }
+              lines.push(row); row = [''];
+            } else { row[row.length - 1] += c; }
           }
           if (row.length > 1 || row[0] !== '') lines.push(row);
           return lines;
         };
 
-        // Fetch Live Data from Google Sheet
         const fetchData = async () => {
           if (isLoading.value) return;
           isLoading.value = true;
@@ -736,45 +579,32 @@
 
           try {
             if (connectionType.value === 'csv') {
-              if (!csvUrl.value) {
-                useSimulationData();
-                isLoading.value = false;
-                return;
-              }
+              if (!csvUrl.value) { useSimulationData(); isLoading.value = false; return; }
               const response = await fetch(csvUrl.value);
-              if (!response.ok) throw new Error('Could not connect to Google Sheet CSV link.');
+              if (!response.ok) throw new Error('Could not connect to CSV link.');
               const csvText = await response.text();
               processCSVData(csvText);
             } else {
-              if (!sheetId.value || !apiKey.value) {
-                errorMessage.value = 'Spreadsheet ID and API Key are required for API connection.';
-                useSimulationData();
-                isLoading.value = false;
-                return;
-              }
+              if (!sheetId.value || !apiKey.value) { useSimulationData(); isLoading.value = false; return; }
               const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId.value}/values/A1:F99?key=${apiKey.value}`;
               const response = await fetch(url);
-              if (!response.ok) throw new Error('Failed to fetch from Google Sheets API. Check your ID and API key.');
+              if (!response.ok) throw new Error('Failed to fetch from Google Sheets API.');
               const data = await response.json();
               processAPIData(data.values);
             }
           } catch (err) {
             console.error(err);
-            errorMessage.value = `Sync Error: ${err.message}. Using offline visual buffer.`;
-          } finally {
+            errorMessage.value = `Sync Error: ${err.message}`;
+          } {
             isLoading.value = false;
             saveSettings();
           }
         };
 
-        // Process data loaded from public CSV
         const processCSVData = (csvText) => {
           const parsedLines = parseCSV(csvText);
-          if (parsedLines.length < 2) {
-            throw new Error("No data rows found inside your Google Sheet.");
-          }
+          if (parsedLines.length < 2) return;
 
-          // Parse configuration Column F fields
           if (parsedLines[1] && parsedLines[1][5]) imageLink.value = parsedLines[1][5];
           if (parsedLines[2] && parsedLines[2][5]) {
             const sizeVal = parseInt(parsedLines[2][5], 10);
@@ -784,35 +614,22 @@
           if (parsedLines[4] && parsedLines[4][5]) textColor.value = parsedLines[4][5];
           if (parsedLines[5] && parsedLines[5][5]) {
             const rawScale = parseFloat(parsedLines[5][5]);
-            if (!isNaN(rawScale)) {
-              scaleFactor.value = rawScale > 5 ? rawScale / 100 : rawScale;
-            }
+            if (!isNaN(rawScale)) scaleFactor.value = rawScale > 5 ? rawScale / 100 : rawScale;
           }
 
-          // Parse Rows A, B, C starting at index 1 (Row 2)
           const newRows = [];
           for (let i = 1; i < parsedLines.length; i++) {
             const r = parsedLines[i];
-            const name = r[0] || '';
-            const descriptor = r[1] || '';
+            const name = r[0] || ''; const descriptor = r[1] || '';
             const checkboxStr = r[2] ? r[2].trim().toUpperCase() : 'FALSE';
             const checked = checkboxStr === 'TRUE' || checkboxStr === '1' || checkboxStr === 'YES';
-
-            if (name || descriptor) {
-              newRows.push({ name, descriptor, checked });
-            }
+            if (name || descriptor) newRows.push({ name, descriptor, checked });
           }
-
           updateRowList(newRows);
         };
 
-        // Process data loaded from Google API JSON
         const processAPIData = (apiValues) => {
-          if (!apiValues || apiValues.length < 2) {
-            throw new Error("Empty range response. Ensure your spreadsheet contains header row + content.");
-          }
-
-          // F cell mapping
+          if (!apiValues || apiValues.length < 2) return;
           if (apiValues[1] && apiValues[1][5]) imageLink.value = apiValues[1][5];
           if (apiValues[2] && apiValues[2][5]) {
             const sizeVal = parseInt(apiValues[2][5], 10);
@@ -822,64 +639,42 @@
           if (apiValues[4] && apiValues[4][5]) textColor.value = apiValues[4][5];
           if (apiValues[5] && apiValues[5][5]) {
             const rawScale = parseFloat(apiValues[5][5]);
-            if (!isNaN(rawScale)) {
-              scaleFactor.value = rawScale > 5 ? rawScale / 100 : rawScale;
-            }
+            if (!isNaN(rawScale)) scaleFactor.value = rawScale > 5 ? rawScale / 100 : rawScale;
           }
 
           const newRows = [];
           for (let i = 1; i < apiValues.length; i++) {
             const r = apiValues[i];
-            const name = r[0] || '';
-            const descriptor = r[1] || '';
+            const name = r[0] || ''; const descriptor = r[1] || '';
             const checked = r[2] === 'TRUE' || r[2] === true || r[2] === 'true';
-
-            if (name || descriptor) {
-              newRows.push({ name, descriptor, checked });
-            }
+            if (name || descriptor) newRows.push({ name, descriptor, checked });
           }
-
           updateRowList(newRows);
         };
 
-        // Smart state updates (prevents re-rendering identical states which resets animations)
         const updateRowList = (newRows) => {
           let hasChanges = false;
-          if (newRows.length !== rows.value.length) {
-            hasChanges = true;
-          } else {
+          if (newRows.length !== rows.value.length) { hasChanges = true; }
+          else {
             for (let i = 0; i < newRows.length; i++) {
-              if (
-                newRows[i].name !== rows.value[i].name ||
-                newRows[i].descriptor !== rows.value[i].descriptor ||
-                newRows[i].checked !== rows.value[i].checked
-              ) {
-                hasChanges = true;
-                break;
+              if (newRows[i].name !== rows.value[i].name || newRows[i].descriptor !== rows.value[i].descriptor || newRows[i].checked !== rows.value[i].checked) {
+                hasChanges = true; break;
               }
             }
           }
-
-          if (hasChanges) {
-            rows.value = newRows;
-          }
+          if (hasChanges) rows.value = newRows;
         };
 
-        // Handle toggling display checkbox in visual control table
         const handleRowToggle = (index) => {
-          rows.value.forEach((row, idx) => {
-            if (idx !== index) row.checked = false;
-          });
+          rows.value.forEach((row, idx) => { if (idx !== index) row.checked = false; });
         };
 
-        // Generate mock setup templates for onboarding
         const useSimulationData = () => {
           imageLink.value = "https://img.icons8.com/ios7/1200/image.jpg";
           imageSize.value = 110;
           barColor.value = "#0095ff";
           textColor.value = "#ffffff";
           scaleFactor.value = 1.0;
-          
           rows.value = [
             { name: "Tech Guy", descriptor: "Founder & Chief Executive Officer, TGG", checked: true },
             { name: "Uh_0h", descriptor: "Chief Operating Officer, TGG", checked: false },
@@ -887,125 +682,64 @@
           ];
         };
 
-        // Switch to transparent/green OBS full window mode
         const toggleOverlayMode = () => {
           isOverlayMode.value = !isOverlayMode.value;
           setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 150);
         };
 
-        // Trigger safe image error callback to handle invalid image links gracefully
         const handleImageError = (e) => {
           e.target.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=60";
         };
 
-        // Fallback for logo if TGG Logo SVG.svg is not physically found
         const handleLogoError = (e) => {
-          e.target.outerHTML = `
-            <svg class="w-12 h-12 text-[#0095ff]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M25 35H75M50 35V75" stroke="#0095ff" stroke-width="8" stroke-linecap="round"/>
-              <path d="M35 55H65" stroke="#0e2fcb" stroke-width="8" stroke-linecap="round"/>
-              <circle cx="50" cy="35" r="5" fill="#ffffff" />
-            </svg>
-          `;
+          e.target.outerHTML = `<svg class="w-12 h-12 text-[#0095ff]" viewBox="0 0 100 100" fill="none"><path d="M25 35H75M50 35V75" stroke="#0095ff" stroke-width="8" stroke-linecap="round"/><path d="M35 55H65" stroke="#0e2fcb" stroke-width="8" stroke-linecap="round"/><circle cx="50" cy="35" r="5" fill="#ffffff" /></svg>`;
         };
 
-        // Manage auto-polling timer loop
         const startTimer = () => {
           stopTimer();
-          timer = setInterval(() => {
-            if (isPolling.value) {
-              fetchData();
-            }
-          }, pollingInterval.value * 1000);
+          timer = setInterval(() => { if (isPolling.value) fetchData(); }, pollingInterval.value * 1000);
         };
 
-        const stopTimer = () => {
-          if (timer) clearInterval(timer);
-        };
+        const stopTimer = () => { if (timer) clearInterval(timer); };
+        const handleScreenResize = () => { isLargeScreen.value = window.innerWidth >= 1024; };
 
-        // Handle screen resizing for splitter layout
-        const handleScreenResize = () => {
-          isLargeScreen.value = window.innerWidth >= 1024;
-        };
+        watch(pollingInterval, () => { startTimer(); saveSettings(); });
+        watch(scaleFactor, () => { saveSettings(); });
+        watch(connectionType, () => { fetchData(); saveSettings(); });
 
-        // Watchers
-        watch(pollingInterval, () => {
-          startTimer();
-          saveSettings();
-        });
-
-        watch(scaleFactor, () => {
-          saveSettings();
-        });
-
-        watch(connectionType, () => {
-          fetchData();
-          saveSettings();
-        });
-
-        // Hooks
         onMounted(() => {
-          // Force viewport to top right away to prevent starting scrolled down
           window.scrollTo(0, 0);
-          if ('scrollRestoration' in history) {
-            history.scrollRestoration = 'manual';
+          if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+          // ROUTING: Check URL search parameters for automatic routing execution
+          const urlParams = new URLSearchParams(window.location.search);
+          if (urlParams.get('view') === 'overlay') {
+            isOverlayMode.value = true;
           }
 
           loadSavedSettings();
-          if (!csvUrl.value && !sheetId.value) {
-            useSimulationData();
-          } else {
-            fetchData();
-          }
+          if (!csvUrl.value && !sheetId.value) useSimulationData(); else fetchData();
+          
           startTimer();
           window.addEventListener('resize', handleScreenResize);
           if (typeof lucide !== 'undefined') lucide.createIcons();
 
-          // Initialize the 2-second Startup sequence
           setTimeout(() => {
             showIntro.value = false;
-            // Initiate the main layout reveal animation slightly after the splash fades out
             setTimeout(() => {
               revealSite.value = true;
-              // Guarantee viewport is scrolled back to top
               window.scrollTo(0, 0);
-              // Refresh Lucide Icons after reveal
               setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 150);
             }, 100);
           }, 2000);
         });
 
         return {
-          showIntro,
-          revealSite,
-          connectionType,
-          csvUrl,
-          sheetId,
-          apiKey,
-          rows,
-          activeItem,
-          imageLink,
-          imageSize,
-          barColor,
-          textColor,
-          scaleFactor,
-          isPolling,
-          pollingInterval,
-          isLoading,
-          errorMessage,
-          isOverlayMode,
-          previewBg,
-          bgType,
-          appBgClass,
-          sidebarWidth,
-          isLargeScreen,
-          initResize,
-          fetchData,
-          handleRowToggle,
-          useSimulationData,
-          toggleOverlayMode,
-          handleImageError,
-          handleLogoError
+          showIntro, revealSite, connectionType, csvUrl, sheetId, apiKey, rows, activeItem,
+          imageLink, imageSize, barColor, textColor, scaleFactor, isPolling, pollingInterval,
+          isLoading, errorMessage, isOverlayMode, previewBg, bgType, appBgClass, sidebarWidth,
+          isLargeScreen, initResize, fetchData, handleRowToggle, useSimulationData,
+          toggleOverlayMode, handleImageError, handleLogoError
         };
       }
     }).mount('#app');
